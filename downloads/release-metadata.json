@@ -1,0 +1,30 @@
+{
+  "version": "desktop-v0.3.3",
+  "publishedAt": "2026-09-25T09:20:57Z",
+  "assets": {
+    "KayuLocalAssistant-linux-arm64.tar.gz": {
+      "size": 452659030,
+      "sha256": "e4dbcd9370a05adaf24c6f777a215f8cf4cae069a6b56c1a2d4f836628bda330"
+    },
+    "KayuLocalAssistant-linux-x64.tar.gz": {
+      "size": 469301354,
+      "sha256": "3b985c1dd58d48c9eaa06598eebaf028a736c8169ce3ea5cfe00cd21014c934f"
+    },
+    "KayuLocalAssistant-macos-arm64.dmg": {
+      "size": 242959004,
+      "sha256": "44dffde74b03b61229c4fd681412e77d986d998de76afd41f4a1e3098f1218d6"
+    },
+    "KayuLocalAssistant-macos-x64.dmg": {
+      "size": 222666930,
+      "sha256": "53627615bdef0a8e475f1a8d43a15e461031b37043889b4f1e18190fb6ee034b"
+    },
+    "KayuSetup-windows-arm64-compatible-x64.exe": {
+      "size": 172555808,
+      "sha256": "1a9b6a2892da3c7510081619254e3015da1f7da5a2304ca4722576aa541f8dc1"
+    },
+    "KayuSetup-windows-x64.exe": {
+      "size": 172555808,
+      "sha256": "1a9b6a2892da3c7510081619254e3015da1f7da5a2304ca4722576aa541f8dc1"
+    }
+  }
+}
