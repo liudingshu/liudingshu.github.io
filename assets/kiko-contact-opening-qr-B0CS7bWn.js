@@ -1,0 +1,1 @@
+var e=`/assets/kiko-contact-opening-qr-Bli2dEIO.jpg`;export{e as t};
