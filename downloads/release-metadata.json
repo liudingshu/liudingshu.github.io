@@ -1,32 +1,39 @@
 {
-  "version": "desktop-v0.3.7",
-  "publishedAt": "2026-10-09T18:50:32Z",
+  "version": "desktop-v0.3.9",
   "productName": "Kiko",
+  "sourceCommit": "fcc32d31c207fa21223396374f9a856ffe1ef634",
+  "releaseChannel": "stable",
+  "preparedAt": "2026-10-12T00:38:49.622702+00:00",
   "assets": {
     "KayuSetup-windows-x64.exe": {
-      "size": 615366998,
-      "sha256": "2e5dcbeb9a790fa248fbe3875afddc809fcb5478c023a11eaa1364d3bd77684b"
+      "size": 627785070,
+      "sha256": "122355beb5ab64cf3913cdbf0c3e61e03e51d2805eaaa6d9ead4d3c9b5fdf271"
     },
     "KayuSetup-windows-arm64-compatible-x64.exe": {
-      "size": 615366998,
-      "sha256": "2e5dcbeb9a790fa248fbe3875afddc809fcb5478c023a11eaa1364d3bd77684b"
+      "size": 627785070,
+      "sha256": "122355beb5ab64cf3913cdbf0c3e61e03e51d2805eaaa6d9ead4d3c9b5fdf271"
     },
     "KayuLocalAssistant-macos-arm64.dmg": {
-      "size": 383064159,
-      "sha256": "43bbfa8986e9911f88ca00a39ddd216cd7ec6c1988788ba51be6a85bda0bc501"
-    },
-    "KayuLocalAssistant-linux-x64.tar.gz": {
-      "size": 641600838,
-      "sha256": "f5b0cdcfbebd88b19bc7c5d760f1ff1163589da10f9352eddfb32adc38954a22"
-    },
-    "KayuLocalAssistant-linux-arm64.tar.gz": {
-      "size": 598069518,
-      "sha256": "e86222f6c92e31d693d123c94836a633631d298875f99054de1d08d08a9a79da"
+      "size": 383802816,
+      "sha256": "a49584386462326e8621488eeb5c6b555bc3d18062ca22fe24e545ec76b992aa"
     },
     "KayuLocalAssistant-macos-x64.dmg": {
-      "size": 373086552,
-      "sha256": "19c1e9e08cc5133c8afb820c8baeb14ee1a144df6436df7fc215fab5f2d48732"
+      "size": 371959889,
+      "sha256": "5d47927398e1273395efe60065a20b68b5e404c6c5f9f7ad300a53481b5cbbd4"
+    },
+    "KayuLocalAssistant-linux-x64.tar.gz": {
+      "size": 641177376,
+      "sha256": "84a2591f65a8fb095ffe165d750e744aa60c407d6b40591c5fab61ff74cbf7b8"
+    },
+    "KayuLocalAssistant-linux-arm64.tar.gz": {
+      "size": 597603155,
+      "sha256": "7003e7b3a65745d769acdc8290a09298e15c1aec34f90dfbe50f854e1f6a4840"
     }
   },
-  "releaseChannel": "preview"
+  "signing": {
+    "windows": "unsigned",
+    "macos": "no Developer ID signing or Apple notarization"
+  },
+  "windowsArm64Compatibility": "Windows 11 ARM64 x64 emulation; not a native ARM64 binary",
+  "publishedAt": "2026-10-12T00:53:30Z"
 }
