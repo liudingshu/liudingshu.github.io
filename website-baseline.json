@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "approvedAt": "2026-10-13",
+  "websiteSourceCommit": "fb9173d7706a680183319680ae6874cffcf6bce7",
+  "approvedDesignAncestor": "930779ee4a8ffbdc5ffb3e534cd7ba9f7a889393",
+  "installerOnlyUpdatePolicy": "Preserve these files byte-for-byte; update downloads metadata only.",
+  "files": {
+    "assets/audio-play-CTgnnUZg.png": {
+      "sha256": "8a8dd4a4d5830afedd02ebf80d7dee255a619eeae8212f1716dade0294713327",
+      "gitBlob": "ac562a1fd232bd03add848d97ba40cd0e125f615"
+    },
+    "assets/kaiyun-logo-BTUFeGK3.js": {
+      "sha256": "d0427c2dc1e556a0c09bd3aa8e19abc30de4e9facf5aabe59793e034c1c78923",
+      "gitBlob": "8043a4848e3c34c7d7adced2106e8dc2f8ab3622"
+    },
+    "assets/kaiyun-logo-aYBAQoxv.png": {
+      "sha256": "c3b1e5c522693a9b78d6de61da47a8e06390e3462994a59159431f77be573dfe",
+      "gitBlob": "432cfdf2576db676550d3584c87957dd7c6cdfb7"
+    },
+    "assets/kiko-contact-opening-qr-B0CS7bWn.js": {
+      "sha256": "df1611445bf8f5e1952f9a2f53775c826ead52d731902a41db3d3d80af95140c",
+      "gitBlob": "4318a0ea9efb7e13d37dcf8c432f8c9a0e0ef6e1"
+    },
+    "assets/kiko-contact-opening-qr-Bli2dEIO.jpg": {
+      "sha256": "f151d421a2d8e0010116207f43806c650a8888438b6aeb5c26718736d3a1d83a",
+      "gitBlob": "e01aded0497abfc0dfdba0e64b85e7aa4422c39f"
+    },
+    "assets/kiko-intro-v2-1-poster-BtTWnRXj.png": {
+      "sha256": "01895c3da39f18261eca4550f36d68851fa6ef5040fff9a101c52c340e2eca39",
+      "gitBlob": "ee0a651e1da44836db9ef904f812e8393308d9a9"
+    },
+    "assets/official-BMmAv6ZO.js": {
+      "sha256": "0c3cb7d00839ad9745a4a30b983b0b97383f37279d49a1d9a4981077bb2cb5c6",
+      "gitBlob": "9c9b2810676527dacd6195329573babdffee73a8"
+    },
+    "assets/official-CKOYVQT8.css": {
+      "sha256": "3682489a4de44c7404817fcbf67fd70f01dfc22a16cc0b5cfe88c36d7c92ad75",
+      "gitBlob": "71d955733996ac6d4129e526f432265c8dcd3893"
+    },
+    "assets/save-icon-D4ccICNa.png": {
+      "sha256": "56644721247d1b2b9601091af92a2db7d4c6eaba9b80382dda3c07427050a154",
+      "gitBlob": "0a69d76996e8f8ddd8d5f2b5307f1af9370fe22d"
+    },
+    "assets/search-icon-Ba5FkwP5.png": {
+      "sha256": "93e3fe19705284dc92e35f0cae018be829e9265d6355c1fea305ce4710000087",
+      "gitBlob": "4b5c2e9507f99677070f7d63e12df4167580f9f4"
+    },
+    "assets/voice-icon-zlc-ZhkC.png": {
+      "sha256": "778b36de9848f5bfebd8ce6dfa9cc770e2b2656967c1c991049c910525852852",
+      "gitBlob": "5a9943e1119ac3869eb38b8a537394341cc7900d"
+    },
+    "assets/voice-preview-D8vxhHG8.wav": {
+      "sha256": "b9a09cdeb9c3e97dad0c3205f0de15a742972b6cfb2b868c4bbaf4fd2804552e",
+      "gitBlob": "1f620a54ed66c94e75b51c9cc2ba52884accfee3"
+    },
+    "index.html": {
+      "sha256": "dc11a1a30352aaaee968df7d064cedaa9bf32c6df74d1b73d147b2cc0c09afa6",
+      "gitBlob": "239a92274a4cf87de53384726d2e5b6a8d7ce71d"
+    },
+    "official.html": {
+      "sha256": "dc11a1a30352aaaee968df7d064cedaa9bf32c6df74d1b73d147b2cc0c09afa6",
+      "gitBlob": "239a92274a4cf87de53384726d2e5b6a8d7ce71d"
+    }
+  }
+}
