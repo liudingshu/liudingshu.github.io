@@ -180,16 +180,34 @@ x.XInternAtom.argtypes=[c.c_void_p,c.c_char_p,c.c_int]; x.XInternAtom.restype=c.
 x.XQueryTree.argtypes=[c.c_void_p,c.c_ulong,c.POINTER(c.c_ulong),c.POINTER(c.c_ulong),c.POINTER(c.POINTER(c.c_ulong)),c.POINTER(c.c_uint)]
 x.XFree.argtypes=[c.c_void_p]
 x.XGetWindowProperty.argtypes=[c.c_void_p,c.c_ulong,c.c_ulong,c.c_long,c.c_long,c.c_int,c.c_ulong,c.POINTER(c.c_ulong),c.POINTER(c.c_int),c.POINTER(c.c_ulong),c.POINTER(c.c_ulong),c.POINTER(c.POINTER(c.c_ubyte))]
+class XErrorEvent(c.Structure):
+    _fields_=[('type',c.c_int),('display',c.c_void_p),('resourceid',c.c_ulong),('serial',c.c_ulong),
+        ('error_code',c.c_ubyte),('request_code',c.c_ubyte),('minor_code',c.c_ubyte)]
+def ignorable_x11_error(error_code,request_code):
+    return error_code==3 and request_code==20  # Destroyed temporary window during GetProperty only.
+x11_errors=[]
+def on_x11_error(display,event):
+    row=event.contents
+    x11_errors.append(dict(errorCode=int(row.error_code),requestCode=int(row.request_code),resource=int(row.resourceid)))
+    return 0  # Surface non-transient errors as controlled Python failures below, never success.
+x11_error_handler=c.CFUNCTYPE(c.c_int,c.c_void_p,c.POINTER(XErrorEvent))(on_x11_error)
+x.XSetErrorHandler.argtypes=[type(x11_error_handler)];x.XSetErrorHandler.restype=c.c_void_p
+x.XSetErrorHandler(x11_error_handler)
+def check_x11_errors():
+    (evidence/'x11-observer-events.json').write_text(json.dumps(x11_errors[-100:],indent=2))
+    assert all(ignorable_x11_error(row['errorCode'],row['requestCode']) for row in x11_errors), 'Unexpected native X11 query error'
 display=x.XOpenDisplay(None); assert display
 top=x.XDefaultRootWindow(display); pid_atom=x.XInternAtom(display,b'_NET_WM_PID',0)
 def windows(pid):
     r,p=c.c_ulong(),c.c_ulong(); children=c.POINTER(c.c_ulong)(); count=c.c_uint()
     assert x.XQueryTree(display,top,c.byref(r),c.byref(p),c.byref(children),c.byref(count))
+    check_x11_errors()
     found=[]
     try:
         for index in range(count.value):
             window=children[index]; kind=c.c_ulong(); fmt=c.c_int(); n=c.c_ulong(); remaining=c.c_ulong(); body=c.POINTER(c.c_ubyte)()
             result=x.XGetWindowProperty(display,window,pid_atom,0,1,0,0,c.byref(kind),c.byref(fmt),c.byref(n),c.byref(remaining),c.byref(body))
+            check_x11_errors()
             try:
                 if result==0 and fmt.value==32 and n.value==1 and body and c.cast(body,c.POINTER(c.c_ulong))[0]==pid: found.append(window)
             finally:
