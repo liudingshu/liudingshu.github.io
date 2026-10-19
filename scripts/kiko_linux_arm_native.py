@@ -141,6 +141,17 @@ with zipfile.ZipFile(delta) as archive:
     assert {p.relative_to(program).as_posix() for p in program.rglob('*') if p.is_file()} == set(manifest['files'])
 exe = program / 'KayuLocalAssistant'
 assert installed_version(program, 'linux-arm64') == '0.3.15'
+libraries = [program/'_internal/libQt6WebEngineCore.so.6',
+    program/'_internal/PySide6/Qt/plugins/platforms/libqxcb.so']
+link_audit=[]
+for library in libraries:
+    assert library.is_file(), 'Required real Qt dependency target absent'
+    result=subprocess.run(['ldd',str(library)],env={**os.environ,'LD_LIBRARY_PATH':str(program/'_internal')},
+        capture_output=True,text=True,timeout=20)
+    missing=[line.strip() for line in result.stdout.splitlines() if 'not found' in line]
+    link_audit.append(dict(library=library.relative_to(program).as_posix(),exitCode=result.returncode,missing=missing))
+    (evidence/'native-linker-preflight.json').write_text(json.dumps(link_audit,indent=2))
+    assert result.returncode==0 and not missing, 'Native runner system-library preflight failed before product start'
 data = work / 'data'; (data / 'database').mkdir(parents=True); (data / 'files').mkdir()
 home = work / 'home'; home.mkdir()
 os.environ.update(HOME=str(home), KAYU_LOCAL_DATA_DIR=str(data), OPENBLAS_NUM_THREADS='1', OMP_NUM_THREADS='1')
