@@ -8,7 +8,7 @@ import importlib.abc
 import importlib.util
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import platform
 import shutil
 import socket
@@ -17,6 +17,7 @@ import subprocess
 import sys
 from threading import Event, Thread
 import time
+import zipfile
 from urllib.parse import urlparse
 import httpx
 import psutil
@@ -44,6 +45,20 @@ Thread(target=guard,daemon=True).start()
 with socket.socket() as probe:assert probe.connect_ex(('127.0.0.1',8765))!=0
 package=download(655605075,'KayuLocalAssistant-macos-x64.dmg','a0be7949400dd8e50a863b4c6322e67df3820ac79d426aaf9a698c2dbc60e80e')
 old_package=download(int(os.environ['KIKO_MAC_BASELINE_ASSET']),'original15-macos-x64.dmg','00a8571c6f799f67e767df2b74d5c5d59b93d22f894c65c243a90f74d266f7f6')
+resume=bool(os.environ.get('KIKO_PRIOR_MAC_FAILURE_ASSET'))
+if resume:
+    prior_zip=download(int(os.environ['KIKO_PRIOR_MAC_FAILURE_ASSET']),'native01-original-failure.zip','8618462c7c46d50b0135d75e57464ea362415f64fb7d1d6770198e6682d866c9')
+    prior=root/'prior'
+    with zipfile.ZipFile(prior_zip) as archive:
+        selected=[]
+        for info in archive.infolist():
+            path=PurePosixPath(info.filename);assert not path.is_absolute() and '..' not in path.parts
+            if info.filename.startswith('evidence/') or (info.filename.startswith('fixture/data/') and '/rollback/' not in info.filename):selected.append(info)
+        archive.extractall(prior,members=selected)
+    previous=json.loads((prior/'evidence/failed.json').read_text())
+    assert previous['sourceCommit']==HEAD and previous['complete'] is False
+    previous_baseline=next(p for p in previous['phases'] if p['phase']=='exact-original15-program-and-protected-data')
+    assert previous['phases'][0]['phase']=='actual-original15-native-Intel-window-idle'
 def mount(package,name):
     target=root/name;target.mkdir()
     subprocess.run(['/usr/bin/hdiutil','attach','-nobrowse','-readonly','-mountpoint',str(target),str(package),'-quiet'],check=True,timeout=120)
@@ -51,7 +66,9 @@ def mount(package,name):
     return target,apps[0]
 candidate_mount,candidate_app=mount(package,'candidate-mount')
 old_mount,old_app=mount(old_package,'old-mount')
-candidate=candidate_app/'Contents/MacOS'
+source_mounts=[old_mount,candidate_mount]
+candidate=root/'control-binary';candidate.mkdir()
+shutil.copyfile(candidate_app/'Contents/MacOS/KayuLocalAssistant',candidate/'KayuLocalAssistant')
 assert digest(candidate/'KayuLocalAssistant')=='eb0627268e5312cf1cdbd798a3ff047a91f921a44bd1a00a97134f9eb8faa99d'
 pyz=CArchiveReader(str(candidate/'KayuLocalAssistant')).open_embedded_archive('PYZ.pyz')
 sys.meta_path.insert(0,FrozenAppImporter())
@@ -67,13 +84,38 @@ assert tree_fingerprint(program)==tree_fingerprint(old_app)
 exe=program/'Contents/MacOS/KayuLocalAssistant'
 assert digest(exe)=='6222ebc1ed33841ec614340711ef93d9c5e23f036cc784a83ce14156ebc61917'
 assert installed_version(program,'macos-x64')=='0.3.15'
-data=work/'data';(data/'database').mkdir(parents=True);(data/'files').mkdir()
+# Confirm or reject the observed held-image contention hypothesis, without a product start.
+if resume:
+    hardlink=root/'candidate-hardlink.dmg';os.link(package,hardlink)
+    probe_mount=root/'held-image-probe';probe_mount.mkdir()
+    probe=subprocess.run(['/usr/bin/hdiutil','attach','-nobrowse','-readonly','-mountpoint',str(probe_mount),str(hardlink),'-quiet'],capture_output=True,timeout=120)
+    (evidence/'held-image-contention-probe.json').write_text(json.dumps(dict(
+        priorCandidateImageAlreadyMounted=True,sameOriginalDmgInode=os.path.samefile(package,hardlink),
+        attachExitCode=probe.returncode,stderr=probe.stderr.decode(errors='replace')[:8192],
+        productOrOsTrustChanged=False),indent=2))
+    if probe_mount.is_mount():subprocess.run(['/usr/bin/hdiutil','detach',str(probe_mount),'-quiet'],check=True,timeout=30)
+# Reader uses a byte-identical detached control copy. Never hold an input DMG during native installation.
+for mounted in list(source_mounts):
+    if mounted.is_mount():subprocess.run(['/usr/bin/hdiutil','detach',str(mounted),'-quiet'],check=True,timeout=30)
+    source_mounts.remove(mounted)
+data=work/'data'
+if resume:
+    shutil.copytree(prior/'fixture/data',data)
+    run_root=data/'updates/runs/4fe7afb4-54f1-401d-ade3-7adf3dff7187'
+    saved_db=run_root/'protection/shunao.db'
+    saved_hash=json.loads((run_root/'protection/database.json').read_text())
+    assert saved_hash['runId']=='4fe7afb4-54f1-401d-ade3-7adf3dff7187' and digest(saved_db)==saved_hash['sha256']
+    shutil.copyfile(saved_db,data/'database/shunao.db')
+else:(data/'database').mkdir(parents=True)
+(data/'files').mkdir(exist_ok=True)
 os.environ.update(KAYU_LOCAL_DATA_DIR=str(data),OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1')
 original=data/'files/synthetic-update-original.txt';original.write_bytes(b'Synthetic native Intel original.\n')
-settings=data/'synthetic-settings.json';settings.write_bytes(b'{"synthetic":"preserve"}\n')
-with sqlite3.connect(data/'database/shunao.db') as db:
-    db.execute('CREATE TABLE kiko_upgrade_fixture(id INTEGER PRIMARY KEY,value TEXT NOT NULL)')
-    db.execute('INSERT INTO kiko_upgrade_fixture VALUES(1,?)',('preserve-native-intel',));db.commit()
+settings=data/'synthetic-settings.json'
+if not resume:
+    settings.write_bytes(b'{"synthetic":"preserve"}\n')
+    with sqlite3.connect(data/'database/shunao.db') as db:
+        db.execute('CREATE TABLE kiko_upgrade_fixture(id INTEGER PRIMARY KEY,value TEXT NOT NULL)')
+        db.execute('INSERT INTO kiko_upgrade_fixture VALUES(1,?)',('preserve-native-intel',));db.commit()
 store=UpdateReceiptStore(data)
 state=dict(sourceCommit=HEAD,version='0.3.16',platform='macos-x64',complete=False,
     level='native-Intel-standard-public-runner',physicalDeviceAcceptance=False,modelCalls=0,
@@ -131,18 +173,28 @@ def observe(version,timeout=100):
 
 asset=DesktopUpdateAsset(fileName=package.name,url='https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.16/'+package.name,
     sha256=digest(package),byteSize=package.stat().st_size,installerKind='macos-dmg')
-download_path=store._root/'downloads/0.3.16'/package.name;download_path.parent.mkdir(parents=True)
+download_path=store._root/'downloads/0.3.16'/package.name;download_path.parent.mkdir(parents=True,exist_ok=True)
 os.link(package,download_path)
 def prepare():
     run=store.begin('0.3.15','0.3.16','macos-x64',asset.sha256)
     prepared=prepare_worker(data,run,download_path,asset,executable=exe)
     return run,prepared,NativeUpdateOperations(WorkerTicket.model_validate(store._read(prepared.ticket_path)),store)
 try:
-    with (evidence/'old.stdout').open('xb') as out,(evidence/'old.stderr').open('xb') as err:
-        subprocess.Popen([str(exe)],cwd=program,stdout=out,stderr=err,close_fds=True)
-    record('actual-original15-native-Intel-window-idle',observation=observe('0.3.15'))
-    before=protection();old_tree=tree_fingerprint(program)[0]
-    record('exact-original15-program-and-protected-data',treeSha256=old_tree,protection=before)
+    if resume:
+        before=protection();old_tree=tree_fingerprint(program)[0]
+        assert before==previous_baseline['protection'] and old_tree==previous_baseline['treeSha256']
+        failed=store.load();assert failed.run_id=='4fe7afb4-54f1-401d-ade3-7adf3dff7187' and failed.stage=='installing'
+        # This is a copy of actual failed state. The immutable original archive remains unchanged.
+        store.advance(failed.run_id,'failed',error_code='DESKTOP_UPDATE_INSTALL_FAILED')
+        state.update(priorAcceptedOldWindowReplayed=False,priorNativeRun=39245007167,
+            priorActualOldWindow=previous['phases'][0]['observation'],priorConsistentDatabaseSha256=saved_hash['sha256'])
+        record('reused-original-native15-window-and-consistent-standby-fixture',treeSha256=old_tree,protection=before)
+    else:
+        with (evidence/'old.stdout').open('xb') as out,(evidence/'old.stderr').open('xb') as err:
+            subprocess.Popen([str(exe)],cwd=program,stdout=out,stderr=err,close_fds=True)
+        record('actual-original15-native-Intel-window-idle',observation=observe('0.3.15'))
+        before=protection();old_tree=tree_fingerprint(program)[0]
+        record('exact-original15-program-and-protected-data',treeSha256=old_tree,protection=before)
     run,prepared,ops=prepare()
     with store._locked('worker.lock'):
         store.advance(run.run_id,'quiescing');coordinator=UpdateCoordinator(data,exe)
@@ -175,5 +227,5 @@ except BaseException as error:
     state['failure']=dict(errorClass=type(error).__name__,fixedError=getattr(error,'code',None),resourceStop=resource_stop.is_set())
     (evidence/'failed.json').write_text(json.dumps(state,indent=2));raise
 finally:
-    for mounted in (old_mount,candidate_mount):
+    for mounted in source_mounts:
         subprocess.run(['/usr/bin/hdiutil','detach',str(mounted),'-quiet'],check=False,timeout=30)

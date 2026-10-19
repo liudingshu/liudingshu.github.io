@@ -32,6 +32,7 @@ jobs:
         env:
           KIKO_NATIVE_QA_DOWNLOADS: ${{ secrets.KIKO_NATIVE_QA_DOWNLOADS }}
           KIKO_MAC_BASELINE_ASSET: '656071159'
+          KIKO_PRIOR_MAC_FAILURE_ASSET: '656104791'
         run: python scripts/kiko_macos_intel_native.py
       - name: Preserve native receipts and synthetic evidence on success or failure
         if: always()
