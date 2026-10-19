@@ -1,39 +1,39 @@
 {
-  "version": "desktop-v0.3.14",
+  "version": "desktop-v0.3.16",
   "productName": "Kiko",
-  "sourceCommit": "f3d52b0885ec93636ea8fee9d802c2309ac73f85",
+  "sourceCommit": "f78b1ae89b7fbf4e584efc83b74ddfaa2eaaf98f",
   "releaseChannel": "stable",
-  "preparedAt": "2026-10-17T10:47:44.402451+00:00",
+  "preparedAt": "2026-10-19T12:29:00Z",
   "assets": {
     "KayuSetup-windows-x64.exe": {
-      "size": 628115200,
-      "sha256": "294ef77c98d7e5445d02f1ef1ee297d5bb2f3c5f2cf09e95a2473bc821ee46da"
+      "size": 628156583,
+      "sha256": "f49b4b0023622ed779b2186d2ca8071d23ce1fbe7c0a89ae4e1d1eda65e44fef"
     },
     "KayuSetup-windows-arm64-compatible-x64.exe": {
-      "size": 628115200,
-      "sha256": "294ef77c98d7e5445d02f1ef1ee297d5bb2f3c5f2cf09e95a2473bc821ee46da"
+      "size": 628156583,
+      "sha256": "f49b4b0023622ed779b2186d2ca8071d23ce1fbe7c0a89ae4e1d1eda65e44fef"
     },
     "KayuLocalAssistant-macos-arm64.dmg": {
-      "size": 384124113,
-      "sha256": "b8ed8d65df940db1b1457aa9221e98b8a65bcd3978885a32a8d90ea875461463"
+      "size": 384712558,
+      "sha256": "8f6e600aa484c3b60ffea216ee682cfaa12f2b46acb115120c4149a066d0f6d3"
     },
     "KayuLocalAssistant-macos-x64.dmg": {
-      "size": 373138615,
-      "sha256": "878c3da92f3ae6b4e05752c89e7d8bcc7fa5a1badb17f3a9fac0d6546df09e1f"
+      "size": 373886206,
+      "sha256": "a0be7949400dd8e50a863b4c6322e67df3820ac79d426aaf9a698c2dbc60e80e"
     },
     "KayuLocalAssistant-linux-x64.tar.gz": {
-      "size": 639066880,
-      "sha256": "407aabc182c038a540dfe7ca33e7c83502325c4dab32286e91113dac42d4aa8f"
+      "size": 888746117,
+      "sha256": "85e4932f13111202e7b85c7b03b9394e861c61e0fa97802ea943a5daf644fbe5"
     },
     "KayuLocalAssistant-linux-arm64.tar.gz": {
-      "size": 597538312,
-      "sha256": "5a6d4e58d5adf421bab5520b4c1ae5f5be97df3c0ebf4c88bcd5100f9654e894"
+      "size": 830906587,
+      "sha256": "e1f1d5cb962dd83c7111553b35a2f44b0d1180daaa509dc078480ed356eeac41"
     }
   },
   "signing": {
     "windows": "unsigned",
     "macos": "no Developer ID signing or Apple notarization"
   },
-  "windowsArm64Compatibility": "Windows 11 ARM64 x64 emulation; not a native ARM64 binary",
-  "publishedAt": "2026-10-17T11:39:49Z"
+  "windowsArm64Compatibility": "Windows x64 binary under Windows ARM64 x64 emulation; not a native ARM64 executable",
+  "publishedAt": "2026-10-19T12:23:46Z"
 }

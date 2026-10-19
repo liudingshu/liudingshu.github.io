@@ -1,1 +1,49 @@
-{"assets":{"linux-arm64":{"byteSize":597538312,"fileName":"KayuLocalAssistant-linux-arm64.tar.gz","installerKind":"linux-tar","sha256":"5a6d4e58d5adf421bab5520b4c1ae5f5be97df3c0ebf4c88bcd5100f9654e894","url":"https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.14/KayuLocalAssistant-linux-arm64.tar.gz"},"linux-x64":{"byteSize":639066880,"fileName":"KayuLocalAssistant-linux-x64.tar.gz","installerKind":"linux-tar","sha256":"407aabc182c038a540dfe7ca33e7c83502325c4dab32286e91113dac42d4aa8f","url":"https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.14/KayuLocalAssistant-linux-x64.tar.gz"},"macos-arm64":{"byteSize":384124113,"fileName":"KayuLocalAssistant-macos-arm64.dmg","installerKind":"macos-dmg","sha256":"b8ed8d65df940db1b1457aa9221e98b8a65bcd3978885a32a8d90ea875461463","url":"https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.14/KayuLocalAssistant-macos-arm64.dmg"},"macos-x64":{"byteSize":373138615,"fileName":"KayuLocalAssistant-macos-x64.dmg","installerKind":"macos-dmg","sha256":"878c3da92f3ae6b4e05752c89e7d8bcc7fa5a1badb17f3a9fac0d6546df09e1f","url":"https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.14/KayuLocalAssistant-macos-x64.dmg"},"windows-arm64-compatible-x64":{"byteSize":628115200,"fileName":"KayuSetup-windows-arm64-compatible-x64.exe","installerKind":"windows-inno","sha256":"294ef77c98d7e5445d02f1ef1ee297d5bb2f3c5f2cf09e95a2473bc821ee46da","url":"https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.14/KayuSetup-windows-arm64-compatible-x64.exe"},"windows-x64":{"byteSize":628115200,"fileName":"KayuSetup-windows-x64.exe","installerKind":"windows-inno","sha256":"294ef77c98d7e5445d02f1ef1ee297d5bb2f3c5f2cf09e95a2473bc821ee46da","url":"https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.14/KayuSetup-windows-x64.exe"}},"contractVersion":"desktop-update-v1","releaseTag":"desktop-v0.3.14","version":"0.3.14"}
+{
+  "contractVersion": "desktop-update-v1",
+  "releaseTag": "desktop-v0.3.16",
+  "version": "0.3.16",
+  "assets": {
+    "windows-x64": {
+      "fileName": "KayuSetup-windows-x64.exe",
+      "url": "https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.16/KayuSetup-windows-x64.exe",
+      "sha256": "f49b4b0023622ed779b2186d2ca8071d23ce1fbe7c0a89ae4e1d1eda65e44fef",
+      "byteSize": 628156583,
+      "installerKind": "windows-inno"
+    },
+    "windows-arm64-compatible-x64": {
+      "fileName": "KayuSetup-windows-arm64-compatible-x64.exe",
+      "url": "https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.16/KayuSetup-windows-arm64-compatible-x64.exe",
+      "sha256": "f49b4b0023622ed779b2186d2ca8071d23ce1fbe7c0a89ae4e1d1eda65e44fef",
+      "byteSize": 628156583,
+      "installerKind": "windows-inno"
+    },
+    "macos-arm64": {
+      "fileName": "KayuLocalAssistant-macos-arm64.dmg",
+      "url": "https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.16/KayuLocalAssistant-macos-arm64.dmg",
+      "sha256": "8f6e600aa484c3b60ffea216ee682cfaa12f2b46acb115120c4149a066d0f6d3",
+      "byteSize": 384712558,
+      "installerKind": "macos-dmg"
+    },
+    "macos-x64": {
+      "fileName": "KayuLocalAssistant-macos-x64.dmg",
+      "url": "https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.16/KayuLocalAssistant-macos-x64.dmg",
+      "sha256": "a0be7949400dd8e50a863b4c6322e67df3820ac79d426aaf9a698c2dbc60e80e",
+      "byteSize": 373886206,
+      "installerKind": "macos-dmg"
+    },
+    "linux-x64": {
+      "fileName": "KayuLocalAssistant-linux-x64.tar.gz",
+      "url": "https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.16/KayuLocalAssistant-linux-x64.tar.gz",
+      "sha256": "85e4932f13111202e7b85c7b03b9394e861c61e0fa97802ea943a5daf644fbe5",
+      "byteSize": 888746117,
+      "installerKind": "linux-tar"
+    },
+    "linux-arm64": {
+      "fileName": "KayuLocalAssistant-linux-arm64.tar.gz",
+      "url": "https://github.com/liudingshu/liudingshu.github.io/releases/download/desktop-v0.3.16/KayuLocalAssistant-linux-arm64.tar.gz",
+      "sha256": "e1f1d5cb962dd83c7111553b35a2f44b0d1180daaa509dc078480ed356eeac41",
+      "byteSize": 830906587,
+      "installerKind": "linux-tar"
+    }
+  }
+}
