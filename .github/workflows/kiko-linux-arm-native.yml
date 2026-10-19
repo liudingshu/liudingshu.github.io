@@ -31,7 +31,7 @@ jobs:
           python -m pip install 'pyinstaller==6.16.0' 'pydantic>=2,<3' 'fastapi>=0.115,<1' 'httpx>=0.27,<1' 'psutil>=6,<8' 'requests>=2.32,<3'
       - name: Exact original15 to16 installation recovery and real native reopen
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          KIKO_NATIVE_QA_DOWNLOADS: ${{ secrets.KIKO_NATIVE_QA_DOWNLOADS }}
           KIKO_BASELINE_ASSET: '655657525'
         run: xvfb-run -a -s '-screen 0 1440x900x24' python scripts/kiko_linux_arm_native.py
       - name: Keep bounded original receipts and synthetic fixture evidence even on failure

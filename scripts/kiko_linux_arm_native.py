@@ -17,6 +17,7 @@ import sys
 import tarfile
 from threading import Event, Thread
 import time
+from urllib.parse import urlparse
 import zipfile
 import httpx
 import psutil
@@ -34,6 +35,9 @@ root = Path(os.environ['RUNNER_TEMP']).resolve() / 'kiko-arm-native16'
 assert not root.exists() and shutil.disk_usage(root.parent).free >= 16 * 1024**3
 root.mkdir()
 evidence = root / 'evidence'; evidence.mkdir()
+(evidence/'preflight.json').write_text(json.dumps(dict(sourceCommit=HEAD,phase='real-host-gate-passed',
+    physicalCores=psutil.cpu_count(logical=False),totalMemoryBytes=psutil.virtual_memory().total)))
+download_urls = json.loads(os.environ['KIKO_NATIVE_QA_DOWNLOADS'])
 resource_stop = Event()
 def guard():
     bad = 0
@@ -65,12 +69,15 @@ def digest(path):
 
 def download(asset_id, name, expected):
     target = root / name
-    url = 'https://api.github.com/repos/liudingshu/liudingshu.github.io/releases/assets/' + str(asset_id)
-    with requests.get(url, headers={'Authorization': 'Bearer ' + os.environ['GITHUB_TOKEN'],
-            'Accept': 'application/octet-stream'}, stream=True, timeout=(30, 90)) as response:
-        response.raise_for_status()
-        with target.open('xb') as out:
-            for block in response.iter_content(4 * 1024**2): out.write(block)
+    url = download_urls[str(asset_id)]
+    assert urlparse(url).scheme == 'https' and urlparse(url).hostname == 'release-assets.githubusercontent.com'
+    try:
+        with requests.get(url, stream=True, timeout=(30, 90)) as response:
+            if response.status_code != 200: raise RuntimeError('Limited asset download rejected: ' + str(response.status_code))
+            with target.open('xb') as out:
+                for block in response.iter_content(4 * 1024**2): out.write(block)
+    except requests.RequestException:
+        raise RuntimeError('Limited binary download transport failed; URL withheld') from None
     assert digest(target) == expected
     print('Verified original binary download: ' + name, flush=True)
     return target
