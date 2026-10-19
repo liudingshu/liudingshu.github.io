@@ -85,7 +85,7 @@ exe=program/'Contents/MacOS/KayuLocalAssistant'
 assert digest(exe)=='6222ebc1ed33841ec614340711ef93d9c5e23f036cc784a83ce14156ebc61917'
 assert installed_version(program,'macos-x64')=='0.3.15'
 # Confirm or reject the observed held-image contention hypothesis, without a product start.
-if resume:
+if resume and os.environ.get('KIKO_MOUNT_CONTENTION_ALREADY_VERIFIED')!='1':
     hardlink=root/'candidate-hardlink.dmg';os.link(package,hardlink)
     probe_mount=root/'held-image-probe';probe_mount.mkdir()
     probe=subprocess.run(['/usr/bin/hdiutil','attach','-nobrowse','-readonly','-mountpoint',str(probe_mount),str(hardlink),'-quiet'],capture_output=True,timeout=120)
@@ -179,15 +179,31 @@ def prepare():
     run=store.begin('0.3.15','0.3.16','macos-x64',asset.sha256)
     prepared=prepare_worker(data,run,download_path,asset,executable=exe)
     return run,prepared,NativeUpdateOperations(WorkerTicket.model_validate(store._read(prepared.ticket_path)),store)
+def prepare_fault_standby(run,ops,resuming):
+    store.advance(run.run_id,'quiescing')
+    coordinator=UpdateCoordinator(data,exe)
+    if resuming:
+        # External fault-injection fixture only: prior real quiescence/snapshot
+        # is independently bound below. Never fabricate a participant/idle vote.
+        assert not coordinator._live(), 'Cannot reuse a standby fixture while an application is live'
+        ops.snapshot()
+    else:
+        participants=coordinator.request_shutdown(run.run_id)
+        coordinator.wait_for_exit(participants,before_exit=ops.snapshot)
 try:
     if resume:
         before=protection();old_tree=tree_fingerprint(program)[0]
         assert before==previous_baseline['protection'] and old_tree==previous_baseline['treeSha256']
         failed=store.load();assert failed.run_id=='4fe7afb4-54f1-401d-ade3-7adf3dff7187' and failed.stage=='installing'
+        prior_shutdown=store._read(run_root/'shutdown.json')
+        expected_participants=[p['participantId'] for p in previous['phases'][0]['observation']['freshActualSignedFrontendIdle']]
+        assert prior_shutdown['runId']==failed.run_id and prior_shutdown['phase']=='exit'
+        assert prior_shutdown['participants']==expected_participants and len(expected_participants)==1
         # This is a copy of actual failed state. The immutable original archive remains unchanged.
         store.advance(failed.run_id,'failed',error_code='DESKTOP_UPDATE_INSTALL_FAILED')
         state.update(priorAcceptedOldWindowReplayed=False,priorNativeRun=39245007167,
-            priorActualOldWindow=previous['phases'][0]['observation'],priorConsistentDatabaseSha256=saved_hash['sha256'])
+            priorActualOldWindow=previous['phases'][0]['observation'],priorConsistentDatabaseSha256=saved_hash['sha256'],
+            faultCaseRoute='external operator from original actual quiesced snapshot; success uses real frozen old15 worker')
         record('reused-original-native15-window-and-consistent-standby-fixture',treeSha256=old_tree,protection=before)
     else:
         with (evidence/'old.stdout').open('xb') as out,(evidence/'old.stderr').open('xb') as err:
@@ -197,8 +213,7 @@ try:
         record('exact-original15-program-and-protected-data',treeSha256=old_tree,protection=before)
     run,prepared,ops=prepare()
     with store._locked('worker.lock'):
-        store.advance(run.run_id,'quiescing');coordinator=UpdateCoordinator(data,exe)
-        participants=coordinator.request_shutdown(run.run_id);coordinator.wait_for_exit(participants,before_exit=ops.snapshot)
+        prepare_fault_standby(run,ops,resume)
         store.advance(run.run_id,'installing');code=ops.install();assert code==0
         store.advance(run.run_id,'verifying',installer_exit_code=code)
         proof=ops.verify_new();assert proof.version=='0.3.16'
