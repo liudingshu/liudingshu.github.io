@@ -1,0 +1,42 @@
+name: Kiko candidate host eligibility
+on:
+  push:
+    branches: [kiko-0316-binary-qa]
+    paths:
+      - .github/workflows/kiko-candidate-host-probe.yml
+      - scripts/kiko_candidate_host_probe.py
+permissions:
+  contents: read
+concurrency:
+  group: kiko-0316-host-eligibility
+  cancel-in-progress: false
+jobs:
+  observe:
+    if: github.repository == 'liudingshu/liudingshu.github.io' && github.event.repository.private == false
+    strategy:
+      fail-fast: true
+      max-parallel: 1
+      matrix:
+        include:
+          - target: linux-x64
+            runner: ubuntu-24.04
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+          - target: macos-x64
+            runner: macos-15-intel
+          - target: windows-arm64-compatible-x64
+            runner: windows-11-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 4
+    steps:
+      - name: Read the public verification helper only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/kiko_candidate_host_probe.py
+          sparse-checkout-cone-mode: false
+      - name: Observe real machine resources
+        env:
+          KIKO_QA_TARGET: ${{ matrix.target }}
+          KIKO_QA_RUNNER: ${{ matrix.runner }}
+        run: python scripts/kiko_candidate_host_probe.py
